@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ananya - Creative Professional</title>
+    <title>Website Under Maintenance</title>
     <style>
         * {
             margin: 0;
@@ -13,78 +13,221 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Navigation */
-        nav {
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
+        /* Animated Background */
+        .background-animation {
             position: fixed;
-            width: 100%;
             top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
         }
 
-        nav ul {
-            list-style: none;
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .circle1 { width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s; }
+        .circle2 { width: 150px; height: 150px; top: 60%; right: 10%; animation-delay: 2s; }
+        .circle3 { width: 80px; height: 80px; bottom: 20%; left: 50%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Main Container */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 4rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 90%;
+            animation: slideUp 0.8s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Maintenance Icon */
+        .maintenance-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #764ba2;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Description */
+        .description {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Countdown Timer */
+        .countdown-section {
+            margin: 2.5rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .countdown {
             display: flex;
             justify-content: center;
-            gap: 2rem;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-        }
-
-        nav a:hover {
+        .countdown-item {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            padding: 1.5rem 1rem;
+            border-radius: 10px;
+            min-width: 70px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* Hero Section */
-        .hero {
-            margin-top: 80px;
-            padding: 4rem 2rem;
-            text-align: center;
-            color: white;
-            animation: fadeInDown 0.8s ease;
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
         }
 
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            letter-spacing: 2px;
+        .countdown-label-small {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
         }
 
-        .hero p {
-            font-size: 1.5rem;
+        /* Status Box */
+        .status-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            text-align: left;
+            border-radius: 8px;
             margin-bottom: 2rem;
-            opacity: 0.95;
         }
 
-        .cta-buttons {
+        .status-box h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .status-box p {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: #fff9e6;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 2px solid #ffd93d;
+        }
+
+        .contact-section h3 {
+            color: #f4a261;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-section p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .contact-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .contact-link:hover {
+            text-decoration: underline;
+            color: #764ba2;
+        }
+
+        /* Buttons */
+        .button-group {
             display: flex;
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
+            margin-top: 2rem;
         }
 
         .btn {
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
+            padding: 0.9rem 2rem;
+            font-size: 0.95rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -95,203 +238,29 @@
         }
 
         .btn-primary {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
         .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: #f0f4ff;
             transform: translateY(-3px);
         }
 
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Sections */
-        section {
-            padding: 4rem 2rem;
-            background: white;
-            margin: 2rem 0;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            animation: fadeInUp 0.8s ease;
-        }
-
-        section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: #667eea;
-            text-align: center;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-
-        section h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 2px;
-        }
-
-        /* About Section */
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .about-text h3 {
-            font-size: 1.8rem;
-            color: #764ba2;
-            margin-bottom: 1rem;
-        }
-
-        .about-text p {
-            margin-bottom: 1rem;
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .about-image {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 3rem;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            font-size: 5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
-        }
-
-        /* Skills Section */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-        }
-
-        .skill-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .skill-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-        }
-
-        .skill-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .skill-card p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        /* Achievements Section */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .achievement-card {
-            background: #f8f9ff;
-            padding: 2rem;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-            transition: all 0.3s;
-        }
-
-        .achievement-card:hover {
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
-            transform: translateX(5px);
-        }
-
-        .achievement-card h3 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Contact Section */
-        .contact-content {
-            text-align: center;
-        }
-
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .contact-item {
-            padding: 1.5rem;
-            background: #f8f9ff;
-            border-radius: 10px;
-            color: #667eea;
-        }
-
-        .contact-item p {
-            color: #555;
-            margin-top: 0.5rem;
-        }
-
-        /* Footer */
-        footer {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
-            border-radius: 15px 15px 0 0;
-        }
-
-        /* Animations */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
+        /* Animation */
+        @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -302,195 +271,263 @@
             }
         }
 
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            font-size: 0.85rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .container {
+                padding: 2.5rem 1.5rem;
+                width: 95%;
             }
 
-            .hero p {
-                font-size: 1.2rem;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-
-            section {
-                padding: 2rem 1.5rem;
-            }
-
-            section h2 {
+            h1 {
                 font-size: 2rem;
             }
 
-            nav ul {
-                gap: 1rem;
+            .maintenance-icon {
+                font-size: 4rem;
             }
+
+            .countdown-item {
+                min-width: 60px;
+                padding: 1rem 0.75rem;
+            }
+
+            .countdown-number {
+                font-size: 2rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Loading indicator for email */
+        .email-subscribe {
+            margin-top: 1.5rem;
+        }
+
+        .email-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        input[type="email"] {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #667eea;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="email"]:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .email-btn {
+            padding: 0.8rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .email-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            color: #27ae60;
+            font-weight: 600;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="#about">परिचय</a></li>
-            <li><a href="#skills">कौशल</a></li>
-            <li><a href="#achievements">उपलब्धियां</a></li>
-            <li><a href="#contact">संपर्क</a></li>
-        </ul>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="hero">
-        <h1>✨ Ananya ✨</h1>
-        <p>एक प्रतिभाशाली और रचनात्मक व्यक्तित्व</p>
-        <div class="cta-buttons">
-            <button class="btn btn-primary">मुझसे जानें</button>
-            <button class="btn btn-secondary">पोर्टफोलियो देखें</button>
-        </div>
+    <!-- Animated Background -->
+    <div class="background-animation">
+        <div class="circle circle1"></div>
+        <div class="circle circle2"></div>
+        <div class="circle circle3"></div>
     </div>
 
-    <!-- Main Container -->
+    <!-- Main Content -->
     <div class="container">
-        <!-- About Section -->
-        <section id="about">
-            <h2>परिचय</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <h3>Ananya कौन है?</h3>
-                    <p>
-                        Ananya एक असाधारण व्यक्तिव है जो अपने जीवन के हर क्षेत्र में उत्कृष्टता लाती है। 
-                        वह एक समर्पित पेशेवर, एक रचनात्मक चिंतक, और एक प्रेरणादायक नेता है।
-                    </p>
-                    <p>
-                        अपनी शुरुआती शिक्षा से लेकर आज तक, Ananya ने हमेशा अपने लक्ष्यों को प्राप्त करने के लिए 
-                        कड़ी मेहनत की है। उसका दृढ़ संकल्प और सकारात्मक दृष्टिकोण उसे भीड़ से अलग करता है।
-                    </p>
-                    <p>
-                        वह विश्वास करती है कि हर चुनौती एक नया अवसर है सीखने का। उसकी यात्रा प्रेरणा और 
-                        निरंतर विकास की कहानी है।
-                    </p>
-                </div>
-                <div class="about-image">👩‍💼</div>
-            </div>
-        </section>
+        <!-- Icon -->
+        <div class="maintenance-icon">🔧</div>
 
-        <!-- Skills Section -->
-        <section id="skills">
-            <h2>कौशल और विशेषज्ञता</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <h3>💼 व्यावसायिक नेतृत्व</h3>
-                    <p>टीम को प्रेरित करना और लक्ष्य प्राप्त करना</p>
-                </div>
-                <div class="skill-card">
-                    <h3>🎨 रचनात्मकता</h3>
-                    <p>नई विचारों को जीवंत रूप से प्रस्तुत करना</p>
-                </div>
-                <div class="skill-card">
-                    <h3>💻 तकनीकी कौशल</h3>
-                    <p>आधुनिक प्रौद्योगिकी में दक्षता</p>
-                </div>
-                <div class="skill-card">
-                    <h3>🌍 संचार</h3>
-                    <p>प्रभावी और स्पष्ट संप्रेषण</p>
-                </div>
-                <div class="skill-card">
-                    <h3>📊 विश्लेषण</h3>
-                    <p>डेटा-संचालित निर्णय लेना</p>
-                </div>
-                <div class="skill-card">
-                    <h3>🚀 नवाचार</h3>
-                    <p>नए समाधान खोजना और लागू करना</p>
-                </div>
-            </div>
-        </section>
+        <!-- Heading -->
+        <h1>Website Under Maintenance</h1>
+        <p class="subtitle">हम आपके लिए कुछ शानदार ला रहे हैं!</p>
 
-        <!-- Achievements Section -->
-        <section id="achievements">
-            <h2>उपलब्धियां और माइलस्टोन</h2>
-            <div class="achievements-grid">
-                <div class="achievement-card">
-                    <h3>🏆 शिक्षा में उत्कृष्टता</h3>
-                    <p>उच्च शिक्षा में प्रथम श्रेणी के अंक प्राप्त किए और अनेक पुरस्कारों से सम्मानित हुई।</p>
+        <!-- Description -->
+        <div class="description">
+            <p>हमारी वेबसाइट वर्तमान में रखरखाव के अधीन है। हम इसे बेहतर बनाने के लिए कड़ी मेहनत कर रहे हैं ताकि आप एक बेहतर अनुभव प्राप्त कर सकें।</p>
+        </div>
+
+        <!-- Status Box -->
+        <div class="status-box">
+            <h3><span class="status-dot"></span>Current Status</h3>
+            <p>🔴 Website Maintenance में है | 🟢 जल्द ही वापस आ जाएगी</p>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="countdown-section">
+            <div class="countdown-label">समय शेष है</div>
+            <div class="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="days">30</span>
+                    <span class="countdown-label-small">दिन</span>
                 </div>
-                <div class="achievement-card">
-                    <h3>🌟 पेशेवर सफलता</h3>
-                    <p>अपने क्षेत्र में एक विश्वसनीय और सम्मानित नाम बन गई। नेतृत्व के लिए जानी जाती है।</p>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="hours">00</span>
+                    <span class="countdown-label-small">घंटे</span>
                 </div>
-                <div class="achievement-card">
-                    <h3>💡 परियोजनाओं में सफलता</h3>
-                    <p>कई महत्वपूर्ण परियोजनाओं को सफलतापूर्वक पूरा किया और संगठन के लक्ष्य प्राप्त किए।</p>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="minutes">00</span>
+                    <span class="countdown-label-small">मिनट</span>
                 </div>
-                <div class="achievement-card">
-                    <h3>🤝 सामाजिक योगदान</h3>
-                    <p>समाज सेवा में सक्रिय भूमिका निभाती है और युवाओं को प्रेरित करती है।</p>
-                </div>
-                <div class="achievement-card">
-                    <h3>🎓 सीखने का सफर</h3>
-                    <p>हमेशा नई चीजें सीखना पसंद करती है और अपने ज्ञान को दूसरों के साथ साझा करती है।</p>
-                </div>
-                <div class="achievement-card">
-                    <h3>🌈 व्यक्तिगत विकास</h3>
-                    <p>अपनी शारीरिक, मानसिक और आध्यात्मिक उन्नति के लिए कार्य करती है।</p>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="seconds">00</span>
+                    <span class="countdown-label-small">सेकंड</span>
                 </div>
             </div>
-        </section>
+        </div>
 
         <!-- Contact Section -->
-        <section id="contact">
-            <h2>संपर्क करें</h2>
-            <div class="contact-content">
-                <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
-                    Ananya से जुड़ें और एक सकारात्मक परिवर्तन का हिस्सा बनें
-                </p>
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <h3>📧 ईमेल</h3>
-                        <p>ananya@example.com</p>
-                    </div>
-                    <div class="contact-item">
-                        <h3>📱 फोन</h3>
-                        <p>+91 XXXXX XXXXX</p>
-                    </div>
-                    <div class="contact-item">
-                        <h3>📍 स्थान</h3>
-                        <p>भारत</p>
-                    </div>
-                </div>
-                <button class="btn btn-primary">अभी संपर्क करें</button>
+        <div class="contact-section">
+            <h3>📞 हमारे साथ संपर्क में रहें</h3>
+            <p>किसी प्रश्न के लिए हमें ईमेल करें:</p>
+            <p><a href="mailto:support@example.com" class="contact-link">support@example.com</a></p>
+        </div>
+
+        <!-- Email Subscription -->
+        <div class="email-subscribe">
+            <p style="color: #666; margin-bottom: 1rem;">जब साइट लाइव हो तो सूचना पाएं:</p>
+            <div class="email-input-group">
+                <input type="email" id="emailInput" placeholder="अपना ईमेल डालें..." required>
+                <button class="email-btn" onclick="subscribeEmail()">सूचित करें</button>
             </div>
-        </section>
+            <div class="success-message" id="successMessage">✓ धन्यवाद! आप सूचना पाएंगे</div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="goHome()">होमपेज</button>
+            <button class="btn btn-secondary" onclick="contactUs()">हमसे संपर्क करें</button>
+        </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Ananya's Creative World | सभी अधिकार सुरक्षित</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Made with ❤️ | Designed with Passion</p>
+        <p>© 2026 Ananya's Website | Coming Soon 🎉</p>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
+        // Countdown Timer Function
+        function startCountdown() {
+            // Set the maintenance end date to 30 days from now
+            const maintenanceEndDate = new Date();
+            maintenanceEndDate.setDate(maintenanceEndDate.getDate() + 30);
+            
+            // Store in localStorage to persist across page reloads
+            if (!localStorage.getItem('maintenanceEndDate')) {
+                localStorage.setItem('maintenanceEndDate', maintenanceEndDate.getTime());
+            } else {
+                maintenanceEndDate.setTime(parseInt(localStorage.getItem('maintenanceEndDate')));
+            }
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = maintenanceEndDate.getTime() - now;
+
+                if (distance < 0) {
+                    // Maintenance period is over
+                    document.getElementById('days').textContent = '00';
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                    return;
                 }
-            });
+
+                // Calculate time units
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Update display with leading zeros
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            }
+
+            // Update immediately and then every second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        // Email subscription
+        function subscribeEmail() {
+            const email = document.getElementById('emailInput').value;
+            if (email && email.includes('@')) {
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('emailInput').value = '';
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+            } else {
+                alert('कृपया सही ईमेल डालें!');
+            }
+        }
+
+        // Button functions
+        function goHome() {
+            alert('जल्द ही होमपेज उपलब्ध होगा! 🎉');
+        }
+
+        function contactUs() {
+            window.location.href = 'mailto:support@example.com';
+        }
+
+        // Allow Enter key to submit email
+        document.getElementById('emailInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                subscribeEmail();
+            }
         });
 
-        // Button interactivity
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-            });
-        });
+        // Start countdown on page load
+        window.addEventListener('load', startCountdown);
     </script>
 </body>
 </html>
