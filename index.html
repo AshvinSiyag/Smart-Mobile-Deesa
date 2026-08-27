@@ -1,533 +1,295 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Under Maintenance</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+import React, { useState, useMemo } from 'react';
+import { Calendar, MapPin, Users, RotateCw, Search, ArrowRight } from 'lucide-react';
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
+const FlightPortal = () => {
+  const [tripType, setTripType] = useState('round-trip');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [departDate, setDepartDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+  const [passengers, setPassengers] = useState(1);
+  const [cabin, setCabin] = useState('economy');
+  const [searchResults, setSearchResults] = useState(null);
+  const [sortBy, setSortBy] = useState('price');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    maxPrice: 100000,
+    airlines: [],
+    stops: 'all'
+  });
 
-        /* Animated Background */
-        .background-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.2;
-        }
+  // Mock airport data
+  const airports = [
+    { code: 'DEL', name: 'Delhi (Indira Gandhi)', city: 'Delhi' },
+    { code: 'BOM', name: 'Mumbai (Bombay)', city: 'Mumbai' },
+    { code: 'BLR', name: 'Bangalore', city: 'Bangalore' },
+    { code: 'HYD', name: 'Hyderabad', city: 'Hyderabad' },
+    { code: 'CCU', name: 'Kolkata', city: 'Kolkata' },
+    { code: 'COK', name: 'Kochi', city: 'Kochi' },
+    { code: 'PNQ', name: 'Pune', city: 'Pune' },
+    { code: 'AMD', name: 'Ahmedabad', city: 'Ahmedabad' },
+  ];
 
-        .circle {
-            position: absolute;
-            border-radius: 50%;
-            background: white;
-            animation: float 15s infinite ease-in-out;
-        }
+  // Mock flight data
+  const generateFlights = () => {
+    const airlines = ['Air India', 'IndiGo', 'Spice Jet', 'Go Air', 'Vistara'];
+    const flights = [];
+    
+    for (let i = 0; i < 15; i++) {
+      flights.push({
+        id: i,
+        airline: airlines[Math.floor(Math.random() * airlines.length)],
+        departure: `${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
+        arrival: `${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
+        duration: `${Math.floor(Math.random() * 4) + 2}h ${Math.floor(Math.random() * 60)}m`,
+        stops: Math.floor(Math.random() * 3),
+        price: Math.floor(Math.random() * 25000) + 5000,
+        rating: (Math.random() * 2 + 3).toFixed(1),
+      });
+    }
+    return flights;
+  };
 
-        .circle1 { width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s; }
-        .circle2 { width: 150px; height: 150px; top: 60%; right: 10%; animation-delay: 2s; }
-        .circle3 { width: 80px; height: 80px; bottom: 20%; left: 50%; animation-delay: 4s; }
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (from && to && departDate) {
+      setSearchResults(generateFlights());
+    }
+  };
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(180deg); }
-        }
+  const filteredFlights = useMemo(() => {
+    if (!searchResults) return [];
+    
+    return searchResults
+      .filter(flight => flight.price <= filters.maxPrice)
+      .filter(flight => filters.airlines.length === 0 || filters.airlines.includes(flight.airline))
+      .filter(flight => {
+        if (filters.stops === 'direct') return flight.stops === 0;
+        if (filters.stops === 'one') return flight.stops <= 1;
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'price') return a.price - b.price;
+        if (sortBy === 'duration') return parseInt(a.duration) - parseInt(b.duration);
+        if (sortBy === 'rating') return parseFloat(b.rating) - parseFloat(a.rating);
+        return 0;
+      });
+  }, [searchResults, sortBy, filters]);
 
-        /* Main Container */
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 4rem 3rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
-            width: 90%;
-            animation: slideUp 0.8s ease;
-            position: relative;
-            z-index: 1;
-        }
+  const fromAirport = airports.find(a => a.code === from);
+  const toAirport = airports.find(a => a.code === to);
 
-        /* Maintenance Icon */
-        .maintenance-icon {
-            font-size: 5rem;
-            margin-bottom: 1.5rem;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Heading */
-        h1 {
-            font-size: 2.5rem;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #764ba2;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-        }
-
-        /* Description */
-        .description {
-            font-size: 1rem;
-            color: #666;
-            line-height: 1.8;
-            margin-bottom: 2.5rem;
-        }
-
-        /* Countdown Timer */
-        .countdown-section {
-            margin: 2.5rem 0;
-            padding: 2rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 15px;
-            color: white;
-        }
-
-        .countdown-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
-
-        .countdown {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .countdown-item {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 1.5rem 1rem;
-            border-radius: 10px;
-            min-width: 70px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .countdown-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .countdown-label-small {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.9;
-        }
-
-        /* Status Box */
-        .status-box {
-            background: #f0f4ff;
-            border-left: 4px solid #667eea;
-            padding: 1.5rem;
-            text-align: left;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-
-        .status-box h3 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .status-box p {
-            color: #555;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
-        }
-
-        /* Contact Section */
-        .contact-section {
-            background: #fff9e6;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            border: 2px solid #ffd93d;
-        }
-
-        .contact-section h3 {
-            color: #f4a261;
-            margin-bottom: 0.5rem;
-        }
-
-        .contact-section p {
-            color: #555;
-            font-size: 0.95rem;
-        }
-
-        .contact-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .contact-link:hover {
-            text-decoration: underline;
-            color: #764ba2;
-        }
-
-        /* Buttons */
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            padding: 0.9rem 2rem;
-            font-size: 0.95rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-secondary:hover {
-            background: #f0f4ff;
-            transform: translateY(-3px);
-        }
-
-        /* Animation */
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Footer */
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 1rem;
-            font-size: 0.85rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 2.5rem 1.5rem;
-                width: 95%;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .maintenance-icon {
-                font-size: 4rem;
-            }
-
-            .countdown-item {
-                min-width: 60px;
-                padding: 1rem 0.75rem;
-            }
-
-            .countdown-number {
-                font-size: 2rem;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-
-        /* Loading indicator for email */
-        .email-subscribe {
-            margin-top: 1.5rem;
-        }
-
-        .email-input-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        input[type="email"] {
-            flex: 1;
-            padding: 0.8rem;
-            border: 2px solid #667eea;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input[type="email"]:focus {
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .email-btn {
-            padding: 0.8rem 1.5rem;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .email-btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-
-        /* Success Message */
-        .success-message {
-            display: none;
-            color: #27ae60;
-            font-weight: 600;
-            margin-top: 1rem;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
-</head>
-<body>
-    <!-- Animated Background -->
-    <div class="background-animation">
-        <div class="circle circle1"></div>
-        <div class="circle circle2"></div>
-        <div class="circle circle3"></div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="container">
-        <!-- Icon -->
-        <div class="maintenance-icon">🔧</div>
-
-        <!-- Heading -->
-        <h1>Website Under Maintenance</h1>
-        <p class="subtitle">हम आपके लिए कुछ शानदार ला रहे हैं!</p>
-
-        <!-- Description -->
-        <div class="description">
-            <p>हमारी वेबसाइट वर्तमान में रखरखाव के अधीन है। हम इसे बेहतर बनाने के लिए कड़ी मेहनत कर रहे हैं ताकि आप एक बेहतर अनुभव प्राप्त कर सकें।</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white shadow-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="text-2xl font-bold text-indigo-600">✈️ FlightFinder</div>
+          <nav className="flex gap-6 text-sm font-medium">
+            <button className="text-gray-700 hover:text-indigo-600">Flights</button>
+            <button className="text-gray-700 hover:text-indigo-600">Hotels</button>
+            <button className="text-gray-700 hover:text-indigo-600">Trips</button>
+          </nav>
         </div>
+      </header>
 
-        <!-- Status Box -->
-        <div class="status-box">
-            <h3><span class="status-dot"></span>Current Status</h3>
-            <p>🔴 Website Maintenance में है | 🟢 जल्द ही वापस आ जाएगी</p>
-        </div>
+      {/* Search Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-4xl font-bold mb-8">Find & Compare Flights</h1>
 
-        <!-- Countdown Timer -->
-        <div class="countdown-section">
-            <div class="countdown-label">समय शेष है</div>
-            <div class="countdown">
-                <div class="countdown-item">
-                    <span class="countdown-number" id="days">30</span>
-                    <span class="countdown-label-small">दिन</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="hours">00</span>
-                    <span class="countdown-label-small">घंटे</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="minutes">00</span>
-                    <span class="countdown-label-small">मिनट</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="seconds">00</span>
-                    <span class="countdown-label-small">सेकंड</span>
-                </div>
+          <form onSubmit={handleSearch} className="bg-white text-gray-800 rounded-lg p-6 shadow-lg">
+            {/* Trip Type */}
+            <div className="flex gap-6 mb-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" value="one-way" checked={tripType === 'one-way'} onChange={(e) => setTripType(e.target.value)} />
+                <span>One-way</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" value="round-trip" checked={tripType === 'round-trip'} onChange={(e) => setTripType(e.target.value)} />
+                <span>Round-trip</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" value="multi-city" checked={tripType === 'multi-city'} onChange={(e) => setTripType(e.target.value)} />
+                <span>Multi-city</span>
+              </label>
             </div>
-        </div>
 
-        <!-- Contact Section -->
-        <div class="contact-section">
-            <h3>📞 हमारे साथ संपर्क में रहें</h3>
-            <p>किसी प्रश्न के लिए हमें ईमेल करें:</p>
-            <p><a href="mailto:support@example.com" class="contact-link">support@example.com</a></p>
-        </div>
+            {/* Search Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+              {/* From */}
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2">From</label>
+                <select value={from} onChange={(e) => setFrom(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500">
+                  <option value="">Select Airport</option>
+                  {airports.map(a => <option key={a.code} value={a.code}>{a.code} - {a.name}</option>)}
+                </select>
+              </div>
 
-        <!-- Email Subscription -->
-        <div class="email-subscribe">
-            <p style="color: #666; margin-bottom: 1rem;">जब साइट लाइव हो तो सूचना पाएं:</p>
-            <div class="email-input-group">
-                <input type="email" id="emailInput" placeholder="अपना ईमेल डालें..." required>
-                <button class="email-btn" onclick="subscribeEmail()">सूचित करें</button>
+              {/* To */}
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2">To</label>
+                <select value={to} onChange={(e) => setTo(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500">
+                  <option value="">Select Airport</option>
+                  {airports.map(a => <option key={a.code} value={a.code}>{a.code} - {a.name}</option>)}
+                </select>
+              </div>
+
+              {/* Depart Date */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">Depart</label>
+                <input type="date" value={departDate} onChange={(e) => setDepartDate(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500" />
+              </div>
+
+              {/* Return Date */}
+              {tripType !== 'one-way' && (
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Return</label>
+                  <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500" />
+                </div>
+              )}
+
+              {/* Passengers & Cabin */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">Passengers</label>
+                <select value={passengers} onChange={(e) => setPassengers(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500">
+                  {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Passenger' : 'Passengers'}</option>)}
+                </select>
+              </div>
             </div>
-            <div class="success-message" id="successMessage">✓ धन्यवाद! आप सूचना पाएंगे</div>
-        </div>
 
-        <!-- Buttons -->
-        <div class="button-group">
-            <button class="btn btn-primary" onclick="goHome()">होमपेज</button>
-            <button class="btn btn-secondary" onclick="contactUs()">हमसे संपर्क करें</button>
+            {/* Cabin Selection */}
+            <div className="flex gap-4 mb-6">
+              {['economy', 'premium', 'business', 'first'].map(c => (
+                <label key={c} className="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" value={c} checked={cabin === c} onChange={(e) => setCabin(e.target.value)} />
+                  <span className="capitalize">{c}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Search Button */}
+            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition">
+              <Search size={20} /> Search Flights
+            </button>
+          </form>
         </div>
+      </div>
+
+      {/* Results Section */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {searchResults && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Sidebar Filters */}
+            <div className="lg:col-span-1">
+              <button onClick={() => setShowFilters(!showFilters)} className="w-full bg-white border-2 border-gray-300 rounded p-3 font-semibold text-indigo-600 mb-4 lg:hidden">
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+
+              {(showFilters || window.innerWidth >= 1024) && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h3 className="text-lg font-bold mb-4">Filters</h3>
+
+                  {/* Price Filter */}
+                  <div className="mb-6">
+                    <label className="block font-semibold mb-2">Max Price: ₹{filters.maxPrice}</label>
+                    <input type="range" min="5000" max="100000" value={filters.maxPrice} onChange={(e) => setFilters({...filters, maxPrice: parseInt(e.target.value)})} className="w-full" />
+                  </div>
+
+                  {/* Stops Filter */}
+                  <div className="mb-6">
+                    <label className="block font-semibold mb-2">Stops</label>
+                    <select value={filters.stops} onChange={(e) => setFilters({...filters, stops: e.target.value})} className="w-full border border-gray-300 rounded px-3 py-2">
+                      <option value="all">All Stops</option>
+                      <option value="direct">Direct Flights Only</option>
+                      <option value="one">One Stop or Less</option>
+                    </select>
+                  </div>
+
+                  {/* Airlines */}
+                  <div>
+                    <label className="block font-semibold mb-2">Airlines</label>
+                    {['Air India', 'IndiGo', 'Spice Jet'].map(airline => (
+                      <label key={airline} className="flex items-center gap-2 mb-2 cursor-pointer">
+                        <input type="checkbox" checked={filters.airlines.includes(airline)} onChange={(e) => {
+                          if (e.target.checked) {
+                            setFilters({...filters, airlines: [...filters.airlines, airline]});
+                          } else {
+                            setFilters({...filters, airlines: filters.airlines.filter(a => a !== airline)});
+                          }
+                        }} />
+                        <span>{airline}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Flight Results */}
+            <div className="lg:col-span-3">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">
+                  {fromAirport?.code} → {toAirport?.code} ({filteredFlights.length} results)
+                </h2>
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="border-2 border-gray-300 rounded px-4 py-2">
+                  <option value="price">Lowest Price</option>
+                  <option value="duration">Shortest Duration</option>
+                  <option value="rating">Best Rating</option>
+                </select>
+              </div>
+
+              {filteredFlights.length === 0 ? (
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                  <p className="text-gray-500 text-lg">No flights found. Try adjusting your filters.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredFlights.map(flight => (
+                    <div key={flight.id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4">
+                          <div className="font-bold text-lg">{flight.airline}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold">{flight.departure}</span>
+                            <ArrowRight size={20} />
+                            <span className="text-2xl font-bold">{flight.arrival}</span>
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-600 mt-2">
+                          Duration: {flight.duration} • {flight.stops === 0 ? 'Direct' : `${flight.stops} Stop(s)`}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="text-sm text-gray-600">Rating</div>
+                          <div className="text-xl font-bold text-yellow-500">★ {flight.rating}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-600">From</div>
+                          <div className="text-3xl font-bold text-indigo-600">₹{flight.price.toLocaleString()}</div>
+                        </div>
+                        <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition whitespace-nowrap">
+                          Select
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {!searchResults && (
+          <div className="text-center py-20">
+            <p className="text-gray-600 text-xl">Search for flights above to get started</p>
+          </div>
+        )}
+      </div>
     </div>
+  );
+};
 
-    <!-- Footer -->
-    <footer>
-        <p>© 2026 Ananya's Website | Coming Soon 🎉</p>
-    </footer>
-
-    <script>
-        // Countdown Timer Function
-        function startCountdown() {
-            // Set the maintenance end date to 30 days from now
-            const maintenanceEndDate = new Date();
-            maintenanceEndDate.setDate(maintenanceEndDate.getDate() + 30);
-            
-            // Store in localStorage to persist across page reloads
-            if (!localStorage.getItem('maintenanceEndDate')) {
-                localStorage.setItem('maintenanceEndDate', maintenanceEndDate.getTime());
-            } else {
-                maintenanceEndDate.setTime(parseInt(localStorage.getItem('maintenanceEndDate')));
-            }
-
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = maintenanceEndDate.getTime() - now;
-
-                if (distance < 0) {
-                    // Maintenance period is over
-                    document.getElementById('days').textContent = '00';
-                    document.getElementById('hours').textContent = '00';
-                    document.getElementById('minutes').textContent = '00';
-                    document.getElementById('seconds').textContent = '00';
-                    return;
-                }
-
-                // Calculate time units
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                // Update display with leading zeros
-                document.getElementById('days').textContent = String(days).padStart(2, '0');
-                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-            }
-
-            // Update immediately and then every second
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        }
-
-        // Email subscription
-        function subscribeEmail() {
-            const email = document.getElementById('emailInput').value;
-            if (email && email.includes('@')) {
-                document.getElementById('successMessage').style.display = 'block';
-                document.getElementById('emailInput').value = '';
-                setTimeout(() => {
-                    document.getElementById('successMessage').style.display = 'none';
-                }, 3000);
-            } else {
-                alert('कृपया सही ईमेल डालें!');
-            }
-        }
-
-        // Button functions
-        function goHome() {
-            alert('जल्द ही होमपेज उपलब्ध होगा! 🎉');
-        }
-
-        function contactUs() {
-            window.location.href = 'mailto:support@example.com';
-        }
-
-        // Allow Enter key to submit email
-        document.getElementById('emailInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                subscribeEmail();
-            }
-        });
-
-        // Start countdown on page load
-        window.addEventListener('load', startCountdown);
-    </script>
-</body>
-</html>
+export default FlightPortal;
