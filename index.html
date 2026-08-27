@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlightFinder - Flight Search Portal</title>
+    <title>Smart Scanner - Flight Search Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -31,42 +31,64 @@
                 airlines: [],
                 stops: 'all'
             });
+            const [airports, setAirports] = useState([]);
+            const [airportSearchFrom, setAirportSearchFrom] = useState('');
+            const [airportSearchTo, setAirportSearchTo] = useState('');
 
-            const airports = [
-                { code: 'DEL', name: 'Delhi (Indira Gandhi)', city: 'Delhi' },
-                { code: 'BOM', name: 'Mumbai (Bombay)', city: 'Mumbai' },
-                { code: 'BLR', name: 'Bangalore', city: 'Bangalore' },
-                { code: 'HYD', name: 'Hyderabad', city: 'Hyderabad' },
-                { code: 'CCU', name: 'Kolkata', city: 'Kolkata' },
-                { code: 'COK', name: 'Kochi', city: 'Kochi' },
-                { code: 'PNQ', name: 'Pune', city: 'Pune' },
-                { code: 'AMD', name: 'Ahmedabad', city: 'Ahmedabad' },
-            ];
+            React.useEffect(() => {
+                fetch('https://raw.githubusercontent.com/mwgg/Airports/master/airports.json')
+                    .then(r => r.json())
+                    .then(data => setAirports(Object.values(data)
+                        .filter(a => a.iata && a.name && a.city && a.country)
+                        .map(a => ({code:a.iata,name:a.name,city:a.city,country:a.country}))
+                        .sort((a,b) => `${a.city} ${a.name}`.localeCompare(`${b.city} ${b.name}`))))
+                    .catch(() => setAirports([
+                        {code:'DEL',name:'Indira Gandhi International Airport',city:'Delhi',country:'India'},
+                        {code:'BOM',name:'Chhatrapati Shivaji Maharaj International Airport',city:'Mumbai',country:'India'},
+                        {code:'BLR',name:'Kempegowda International Airport',city:'Bengaluru',country:'India'},
+                        {code:'HYD',name:'Rajiv Gandhi International Airport',city:'Hyderabad',country:'India'}
+                    ]));
+            }, []);
 
-            const generateFlights = () => {
-                const airlines = ['Air India', 'IndiGo', 'Spice Jet', 'Go Air', 'Vistara'];
-                const flights = [];
-                
-                for (let i = 0; i < 15; i++) {
-                    flights.push({
-                        id: i,
-                        airline: airlines[Math.floor(Math.random() * airlines.length)],
-                        departure: `${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-                        arrival: `${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-                        duration: `${Math.floor(Math.random() * 4) + 2}h ${Math.floor(Math.random() * 60)}m`,
-                        stops: Math.floor(Math.random() * 3),
-                        price: Math.floor(Math.random() * 25000) + 5000,
-                        rating: (Math.random() * 2 + 3).toFixed(1),
-                    });
-                }
-                return flights;
+            const airportMatches = q => {
+                q=q.trim().toLowerCase();
+                return (q ? airports.filter(a => [a.code,a.name,a.city,a.country].some(x=>x.toLowerCase().includes(q))) : airports).slice(0,30);
             };
 
-            const handleSearch = (e) => {
+            const bookingSites = [
+                {name:'Google Flights',url:'https://www.google.com/travel/flights'},
+                {name:'Skyscanner',url:'https://www.skyscanner.net/'},
+                {name:'KAYAK',url:'https://www.kayak.com/flights'},
+                {name:'Wego',url:'https://www.wego.com/flights'},
+                {name:'Expedia',url:'https://www.expedia.com/Flights'},
+                {name:'Kiwi.com',url:'https://www.kiwi.com/en/search'}
+            ];
+
+            const makeSearchUrl = (site, f) => {
+                const fromCode=f.from, toCode=f.to, d=f.departDate, r=f.returnDate||'';
+                if(site.name==='Google Flights') return `https://www.google.com/travel/flights?hl=en#flt=${fromCode}.${toCode}.${d}*${toCode}.${fromCode}.${r}`;
+                if(site.name==='Skyscanner') return `https://www.skyscanner.net/transport/flights/${fromCode.toLowerCase()}/${toCode.toLowerCase()}/${d.replaceAll('-','')}/`;
+                if(site.name==='KAYAK') return `https://www.kayak.com/flights/${fromCode}-${toCode}/${d}${r?'/'+r:''}/${f.passengers}adults`;
+                if(site.name==='Wego') return `https://www.wego.com/flights/search?search=${fromCode}-${toCode}-${d}`;
+                if(site.name==='Expedia') return `https://www.expedia.com/Flights-Search?flight-type=${f.tripType==='one-way'?'on':'roundtrip'}&from=${fromCode}&to=${toCode}&departure=${d}${r?'&return='+r:''}&passengers=${f.passengers}`;
+                return `https://www.kiwi.com/en/search/results/${fromCode}/${toCode}/${d}/${r||d}/`;
+            };
+
+            const generateFlights = () => Array.from({length:12},(_,i)=>({
+                id:i, airline:['Air India','IndiGo','Emirates','Qatar Airways','Singapore Airlines','Lufthansa','British Airways'][Math.floor(Math.random()*7)],
+                departure:`${String(Math.floor(Math.random()*24)).padStart(2,'0')}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}`,
+                arrival:`${String(Math.floor(Math.random()*24)).padStart(2,'0')}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}`,
+                duration:`${Math.floor(Math.random()*10)+2}h ${Math.floor(Math.random()*60)}m`,
+                stops:Math.floor(Math.random()*3), price:Math.floor(Math.random()*25000)+5000,
+                rating:(Math.random()*2+3).toFixed(1), from,to,departDate,returnDate,passengers,cabin,tripType
+            }));
+            const handleSearch = e => {
                 e.preventDefault();
-                if (from && to && departDate) {
-                    setSearchResults(generateFlights());
-                }
+                if(!from || !to || !departDate || (tripType!=='one-way' && !returnDate))
+                    return alert('Please select From, To and the required travel dates.');
+                if(from===to) return alert('From and To airports cannot be the same.');
+                setSearchResults(generateFlights());
+                setShowFilters(false);
             };
 
             const filteredFlights = useMemo(() => {
@@ -96,7 +118,10 @@
                     {/* Header */}
                     <header className="bg-white shadow-md sticky top-0 z-50">
                         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-                            <div className="text-2xl font-bold text-indigo-600">✈️ FlightFinder</div>
+                            <div className="flex items-center gap-3">
+                                <img src="./logo.png" alt="Smart Scanner" className="h-10 w-10 object-contain rounded-lg" onError={(e)=>e.currentTarget.style.display='none'} />
+                                <div className="text-2xl font-bold text-indigo-600">Smart Scanner</div>
+                            </div>
                             <nav className="flex gap-6 text-sm font-medium">
                                 <button className="text-gray-700 hover:text-indigo-600">Flights</button>
                                 <button className="text-gray-700 hover:text-indigo-600">Hotels</button>
@@ -108,7 +133,7 @@
                     {/* Search Section */}
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12">
                         <div className="max-w-7xl mx-auto px-4">
-                            <h1 className="text-4xl font-bold mb-8">Find & Compare Flights</h1>
+                            <h1 className="text-4xl font-bold mb-8">Smart Scanner — Find & Compare Flights</h1>
 
                             <form onSubmit={handleSearch} className="bg-white text-gray-800 rounded-lg p-6 shadow-lg">
                                 {/* Trip Type */}
@@ -132,19 +157,23 @@
                                     {/* From */}
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">From</label>
-                                        <select value={from} onChange={(e) => setFrom(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500">
-                                            <option value="">Select Airport</option>
-                                            {airports.map(a => <option key={a.code} value={a.code}>{a.code} - {a.name}</option>)}
-                                        </select>
+                                        <div className="relative">
+                                            <input value={airportSearchFrom || (airports.find(a=>a.code===from)?.code || '')} onChange={e=>{setAirportSearchFrom(e.target.value);setFrom('')}} placeholder="Search airport, city or IATA" className="w-full border-2 border-gray-300 rounded px-4 py-3" autoComplete="off"/>
+                                            {airportSearchFrom && <div className="absolute z-50 w-full bg-white border rounded-lg shadow-xl max-h-64 overflow-auto">
+                                                {airportMatches(airportSearchFrom).map(a=><button type="button" key={a.code+a.name} onClick={()=>{setFrom(a.code);setAirportSearchFrom('')}} className="w-full text-left px-4 py-3 hover:bg-indigo-50 border-b"><b>{a.code}</b> — {a.name}<div className="text-xs text-gray-500">{a.city}, {a.country}</div></button>)}
+                                            </div>}
+                                        </div>
                                     </div>
 
                                     {/* To */}
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">To</label>
-                                        <select value={to} onChange={(e) => setTo(e.target.value)} className="w-full border-2 border-gray-300 rounded px-4 py-3 focus:outline-none focus:border-indigo-500">
-                                            <option value="">Select Airport</option>
-                                            {airports.map(a => <option key={a.code} value={a.code}>{a.code} - {a.name}</option>)}
-                                        </select>
+                                        <div className="relative">
+                                            <input value={airportSearchTo || (airports.find(a=>a.code===to)?.code || '')} onChange={e=>{setAirportSearchTo(e.target.value);setTo('')}} placeholder="Search airport, city or IATA" className="w-full border-2 border-gray-300 rounded px-4 py-3" autoComplete="off"/>
+                                            {airportSearchTo && <div className="absolute z-50 w-full bg-white border rounded-lg shadow-xl max-h-64 overflow-auto">
+                                                {airportMatches(airportSearchTo).map(a=><button type="button" key={a.code+a.name} onClick={()=>{setTo(a.code);setAirportSearchTo('')}} className="w-full text-left px-4 py-3 hover:bg-indigo-50 border-b"><b>{a.code}</b> — {a.name}<div className="text-xs text-gray-500">{a.city}, {a.country}</div></button>)}
+                                            </div>}
+                                        </div>
                                     </div>
 
                                     {/* Depart Date */}
@@ -249,6 +278,14 @@
                                             <option value="duration">⏱️ Shortest Duration</option>
                                             <option value="rating">⭐ Best Rating</option>
                                         </select>
+                                    </div>
+
+                                    <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl p-5 mb-6 shadow-lg">
+                                        <h3 className="text-xl font-bold">💰 Cheapest Flights — Compare Websites</h3>
+                                        <p className="text-indigo-100 text-sm mb-4">Open the same route and dates on multiple flight-search websites.</p>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                            {bookingSites.map(site => <a key={site.name} href={makeSearchUrl(site, filteredFlights[0] || {from,to,departDate,returnDate,passengers,cabin,tripType})} target="_blank" rel="noopener noreferrer" className="bg-white text-indigo-700 font-bold px-3 py-3 rounded-lg text-center hover:bg-indigo-50">{site.name} ↗</a>)}
+                                        </div>
                                     </div>
 
                                     {filteredFlights.length === 0 ? (
